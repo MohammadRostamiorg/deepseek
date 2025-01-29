@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    <style>
+        :root {
+            --primary-color: #414158;
+            --background-color: #292a2d;
+            --user-bubble: #414158;
+            --bot-bubble: #292a2d;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #212327;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--background-color);
+        }
+
+        .chat-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e5e5;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            height: 32px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .message {
+            max-width: 800px;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .user .avatar {
+            background-color: var(--user-bubble);
+        }
+
+        .bot .avatar {
+            background-color: var(--bot-bubble);
+            border: 1px solid #e5e5e5;
+        }
+
+        .bubble {
+            padding: 1rem;
+            border-radius: 8px;
+            line-height: 1.5;
+        }
+
+        .user .bubble {
+            background-color: var(--user-bubble);
+            color: white;
+            border-radius: 8px 8px 0 8px;
+        }
+
+        .bot .bubble {
+            background-color: var(--bot-bubble);
+            /* border: 1px solid #e5e5e5; */
+            border-radius: 8px 8px 8px 0;
+            color: #fff;
+        }
+
+        .input-container {
+            padding: 1.5rem;
+            border-top: 1px solid #e5e5e5;
+            position: relative;
+        }
+
+        .input-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 1rem 4rem 1rem 1rem;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            font-size: 1rem;
+            resize: none;
+            min-height: 56px;
+            background-color: #404045;
+            color: #fff;
+        }
+
+        .send-button {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="chat-container">
+    <div class="chat-header">
+        <div class="logo"></div>
+        <h2 style="color: #4d6bfe;">DeepSeek</h2>
+    </div>
+
+    <div class="chat-messages" id="messages">
+        <div class="message bot">
+            <div class="avatar"></div>
+            <div class="bubble">
+                Hello! I'm DeepSeek, an AI assistant. How can I help you today?
+            </div>
+        </div>
+    </div>
+
+    <div class="input-container">
+        <div class="input-wrapper">
+            <textarea class="chat-input" id="input" placeholder="Send a message"></textarea>
+            <button class="send-button" id="send">Send</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const sendButton = document.getElementById('send');
+    const input = document.getElementById('input');
+    const messagesContainer = document.getElementById('messages');
+
+    async function addMessage(role, content) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${role}`;
+        messageDiv.innerHTML = `
+                <div class="avatar"></div>
+                <div class="bubble">${content}</div>
+            `;
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendButton.click();
+        }
+    });
+
+    sendButton.addEventListener('click', async () => {
+        const message = input.value.trim();
+        if (!message) return;
+
+        input.value = '';
+        await addMessage('user', message);
+
+        // Simulate AI response
+        setTimeout(async () => {
+            if (message.includes('نقی')) {
+                await addMessage('bot', 'اسم زن نقی معمولی هما سعادت بود نقششم ریما رامین فر بازی کرده');
+            } else if (message.includes('رئیس جمهور')) {
+                await addMessage('bot', 'اسم رئیس جمهور چین شی جین پینگ هستش');
+            } else if (message.includes('میدان') || message.includes('تیانمن') || message.includes('Tiananmen')) {
+                await addMessage('bot',
+                    `
+                        اعتراضات میدان تیان‌آن‌من (نام‌های دیگر: کشتار میدان تیان‌آن‌من یا قتل‌عام ۴ ژوئن یا واقعهٔ "۴–۶") به مجموعه‌ای تظاهرات اعتراضی در میدان تیان‌آن‌من شهر پکن، جمهوری خلق چین گفته می‌شود که به رهبری دانشجویان و از ۱۵ آوریل ۱۹۸۹ تا ۴ ژوئن همان سال ادامه داشت.[۱] این اعتراضات با حضور بیش از صدهزار نفر برگزار شد. گفته می‌شود بین چندصد نفر تا هزار نفر در این اعتراض‌ها کشته شدند؛ سازمان صلیب سرخ چین آمار ۲۶۰۰۰ کشته را منتشر کرده‌است و تخمین سفیر سوئیس ۲۷۰۰۰ کشته بوده‌است، ولی اسناد بریتانیا که در تاریخ ۲۴ دسامبر ۲۰۱۷ از طبقه‌بندی خارج شده نشان می‌دهد تخمین بریتانیایی‌ها این بوده حداقل ده هزار معترض چینی در اوایل تابستان سال ۱۹۸۹ در میدان تیان‌آنمن پکن کشته شدند. آلن دونالد سفیر وقت بریتانیا در چین خاطر نشان می‌کند که این افراد به دست نیروهای چینی سرکوب شدند. این در حالی است که آمار بیمارستان پکن نشان می‌دهد که ۴۷۸ نفر کشته و ۹۸۰ نفر زخمی شده‌اند.
+
+دانشجویان در این واقعه به ناپایداری اقتصادی چین و سرکوب‌های حزب کمونیست و فساد دولتی اعتراض کردند. جنبش دموکراسی چین در این اعتراضات نقش رهبری داشت.[۲]
+                        `
+                );
+            }else {
+                await addMessage('bot',
+                    `حقیقتا اینو دیگه نمیدونم برو از خود دیپ سیک بپرس
+
+`
+                    + "<br> <a href='chat.deepseek.com'>deepseek</a>"
+                );
+            }
+        }, 1000);
+    });
+</script>
+</body>
+</html>
